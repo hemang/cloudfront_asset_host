@@ -25,7 +25,7 @@ end
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gemspec|
-    gemspec.name = "cloudfront_asset_host"
+    gemspec.name = "wpeterson-cloudfront_asset_host"
     gemspec.summary = "Rails plugin to easily and efficiently deploy your assets on Amazon's S3 or CloudFront"
     gemspec.description = "Easy deployment of your assets on CloudFront or S3 using a simple rake-task. When enabled in production, the application's asset_host and public_paths will point to the correct location."
     gemspec.email = "menno@wakoopa.com"

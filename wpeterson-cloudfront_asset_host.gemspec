@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Menno van der Sman"]
-  s.date = %q{2010-08-22}
+  s.date = %q{2010-08-23}
   s.description = %q{Easy deployment of your assets on CloudFront or S3 using a simple rake-task. When enabled in production, the application's asset_host and public_paths will point to the correct location.}
   s.email = %q{menno@wakoopa.com}
   s.extra_rdoc_files = [
@@ -34,7 +34,8 @@ Gem::Specification.new do |s|
      "test/cloudfront_asset_host_test.rb",
      "test/css_rewriter_test.rb",
      "test/test_helper.rb",
-     "test/uploader_test.rb"
+     "test/uploader_test.rb",
+     "wpeterson-cloudfront_asset_host.gemspec"
   ]
   s.homepage = %q{http://github.com/menno/cloudfront_asset_host}
   s.rdoc_options = ["--charset=UTF-8"]

@@ -62,7 +62,7 @@ module CloudfrontAssetHost
     end
 
     def asset_host(source = nil, request = nil)
-      return '' if source && disable_cdn_for_source?(source)
+      return '' if source && !use_cdn_for_source?(source)
 
       cname_for_source = (self.cname =~ /%d/) ? self.cname % (source.hash % 4) : self.cname
       host = cname_for_source.present? ? "http://#{ cname_for_source }" : "http://#{self.bucket_host}"
@@ -105,8 +105,9 @@ module CloudfrontAssetHost
       CloudfrontAssetHost.gzip_extensions.include?(extension)
     end
 
-    def disable_cdn_for_source?(source)
-      source.match(exclude_pattern) if exclude_pattern.present?
+    def use_cdn_for_source?(source)
+      return true unless exclude_pattern.present?
+      ! source.match(exclude_pattern)
     end
 
   private

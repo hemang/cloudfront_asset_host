@@ -42,7 +42,7 @@ module CloudfrontAssetHost
       end
 
       def should_upload?(key, options={})
-        return false if CloudfrontAssetHost.disable_cdn_for_source?(key)
+        return false unless CloudfrontAssetHost.use_cdn_for_source?(key)
 
         options[:force_write] || !existing_keys.include?(key)
       end

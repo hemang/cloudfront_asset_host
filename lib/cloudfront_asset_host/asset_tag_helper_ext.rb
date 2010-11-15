@@ -10,8 +10,8 @@ module ActionView
           asset_id
         else
           path = File.join(ASSETS_DIR, source)
-          rewrite_path = File.exist?(path) && !CloudfrontAssetHost.disable_cdn_for_source?(source)
-          asset_id = rewrite_path ? CloudfrontAssetHost.key_for_path(path) : ''
+          rewrite_path = File.exist?(path) && CloudfrontAssetHost.use_cdn_for_source?(source)
+          asset_id = rewrite_path ? CloudfrontAssetHost.key_for_path(path) : rails_asset_id_without_cloudfront(source)
 
           if @@cache_asset_timestamps
             @@asset_timestamps_cache_guard.synchronize do
@@ -25,11 +25,11 @@ module ActionView
 
       # Override asset_path so it prepends the asset_id
       def rewrite_asset_path_with_cloudfront(source)
-        asset_id = rails_asset_id(source)
-        if asset_id.blank?
-          source
-        else
+        if CloudfrontAssetHost.use_cdn_for_source?(source)
+          asset_id = rails_asset_id(source)
           "/#{asset_id}#{source}"
+        else
+          rewrite_asset_path_without_cloudfront(source)
         end
       end
 

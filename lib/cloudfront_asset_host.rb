@@ -97,6 +97,7 @@ module CloudfrontAssetHost
     end
 
     def key_for_path(path)
+      return '' unless File.exist?(path)
       key_prefix + md5sum(path)[0..8]
     end
 

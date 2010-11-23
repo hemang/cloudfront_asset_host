@@ -34,13 +34,11 @@ module ActionView
       # Override asset_path so it prepends the asset_id
       def rewrite_asset_path_with_cloudfront(source)
         asset_id = rails_asset_id(source)
-        if CloudfrontAssetHost.use_cdn_for_source?(source)
-          asset_id.present? ? "/#{asset_id}#{source}" : source
-        else
-          asset_id.present? ? "#{source}?#{asset_id}" : source
-        end
-      end
+        return source unless asset_id.present?
 
+        use_cdn = CloudfrontAssetHost.use_cdn_for_source?(source)
+        use_cdn ? "/#{asset_id}#{source}" : "#{source}?#{asset_id}"
+      end
     end
   end
 end

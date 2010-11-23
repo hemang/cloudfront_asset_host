@@ -9,17 +9,7 @@ module ActionView
         if @@cache_asset_timestamps && (asset_id = @@asset_timestamps_cache[source])
           asset_id
         else
-          path = File.join(ASSETS_DIR, source)
-          if file_exists = File.exist?(path)
-            use_cdn = CloudfrontAssetHost.use_cdn_for_source?(source)
-            asset_id = if use_cdn
-              CloudfrontAssetHost.key_for_path(path)
-            else
-              File.exist?(path) ? File.mtime(path).to_i.to_s : ''
-            end
-          else
-            asset_id = ''
-          end
+          asset_id = lookup_asset_id_with_cloudfront(source)
 
           if @@cache_asset_timestamps
             @@asset_timestamps_cache_guard.synchronize do
@@ -29,6 +19,16 @@ module ActionView
 
           asset_id
         end
+      end
+
+      def lookup_asset_id_with_cloudfront(source)
+        path = File.join(ASSETS_DIR, source)
+        return '' unless File.exist?(path)
+
+        use_cdn = CloudfrontAssetHost.use_cdn_for_source?(source)
+        return CloudfrontAssetHost.key_for_path(path) if use_cdn
+
+        File.mtime(path).to_i.to_s
       end
 
       # Override asset_path so it prepends the asset_id

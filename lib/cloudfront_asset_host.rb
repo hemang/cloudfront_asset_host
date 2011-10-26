@@ -65,7 +65,9 @@ module CloudfrontAssetHost
       return '' if source && !use_cdn_for_source?(source)
 
       cname_for_source = (self.cname =~ /%d/) ? self.cname % (source.hash % 4) : self.cname
-      host = cname_for_source.present? ? "http://#{ cname_for_source }" : "http://#{self.bucket_host}"
+      protocol = request.try(:protocol) || 'http://'
+      hostname = cname_for_source.present? ? cname_for_source : self.bucket_host
+      host = "#{protocol}#{hostname}"
 
       if source && request && CloudfrontAssetHost.gzip
         gzip_allowed  = CloudfrontAssetHost.gzip_allowed_for_source?(source)

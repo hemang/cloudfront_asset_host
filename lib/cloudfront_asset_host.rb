@@ -64,13 +64,17 @@ module CloudfrontAssetHost
     def asset_host(source = nil, request = nil)
       return '' if source && !use_cdn_for_source?(source)
 
-      cname_for_source = (self.cname =~ /%d/) ? self.cname % (source.hash % 4) : self.cname
       protocol = request.try(:protocol) || 'http://'
-      hostname = cname_for_source.present? ? cname_for_source : self.bucket_host
+      use_cname = self.cname.present? && ( protocol != 'https://' )
+      hostname = if use_cname
+        (self.cname =~ /%d/) ? self.cname % (source.hash % 4) : self.cname
+      else
+        self.bucket_host
+      end
       host = "#{protocol}#{hostname}"
 
-      if source && request && CloudfrontAssetHost.gzip
-        gzip_allowed  = CloudfrontAssetHost.gzip_allowed_for_source?(source)
+      if source && request && self.gzip
+        gzip_allowed = self.gzip_allowed_for_source?(source)
 
         # Only Netscape 4 does not support gzip
         # IE masquerades as Netscape 4, so we check that as well
@@ -79,7 +83,7 @@ module CloudfrontAssetHost
         gzip_accepted &&= request.headers['Accept-Encoding'].to_s.include?('gzip')
 
         if gzip_accepted && gzip_allowed
-          host << "/#{CloudfrontAssetHost.gzip_prefix}"
+          host << "/#{self.gzip_prefix}"
         end
       end
 

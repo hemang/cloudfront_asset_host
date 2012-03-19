@@ -11,6 +11,9 @@ module CloudfrontAssetHost
 
   # CNAME that is configured for the bucket or CloudFront distribution
   mattr_accessor :cname
+  
+  # Assigned Cloudfront Hostname (may or may not be CNAME, due to custom DNS)
+  mattr_accessor :cloudfront_host
 
   # Prefix keys
   mattr_accessor :key_prefix
@@ -43,6 +46,7 @@ module CloudfrontAssetHost
       # default configuration
       self.bucket     = nil
       self.cname      = nil
+      self.cloudfront_host = nil
       self.key_prefix = ""
       self.s3_config  = "#{RAILS_ROOT}/config/s3.yml"
       self.enabled    = false
@@ -68,6 +72,8 @@ module CloudfrontAssetHost
       use_cname = self.cname.present? && ( protocol != 'https://' )
       hostname = if use_cname
         (self.cname =~ /%d/) ? self.cname % (source.hash % 4) : self.cname
+      elsif self.cloudfront_host.present?
+        self.cloudfront_host
       else
         self.bucket_host
       end

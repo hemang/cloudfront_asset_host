@@ -68,7 +68,7 @@ module CloudfrontAssetHost
     def asset_host(source = nil, request = nil)
       return '' if source && !use_cdn_for_source?(source)
 
-      protocol = request.respond_to?(:protocol) && request.try(:protocol) || 'http://'
+      protocol = request.respond_to?(:ssl?) && request.try(:ssl?) ? 'https://' : 'http://'
       use_cname = self.cname.present? && ( protocol != 'https://' )
       hostname = if use_cname
         (self.cname =~ /%d/) ? self.cname % (source.hash % 4) : self.cname

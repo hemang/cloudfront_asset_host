@@ -62,8 +62,7 @@ class CloudfrontAssetHostTest < Test::Unit::TestCase
       end
 
       context "when taking the headers into account" do
-
-        should "support gzip for IE" do
+        should "support gzip for IE8+" do
           request = stub(:headers => {'User-Agent' => 'Mozilla/4.0 (compatible; MSIE 8.0)', 'Accept-Encoding' => 'gzip, compress'})
           assert_equal "http://assethost.com/gz", CloudfrontAssetHost.asset_host(@source, request)
         end
@@ -75,6 +74,19 @@ class CloudfrontAssetHostTest < Test::Unit::TestCase
 
         should "support not support gzip for Netscape 4" do
           request = stub(:headers => {'User-Agent' => 'Mozilla/4.0', 'Accept-Encoding' => 'gzip, compress'})
+          assert_equal "http://assethost.com", CloudfrontAssetHost.asset_host(@source, request)
+        end
+
+        should "support not support gzip unless accept headers include it" do
+          request = stub(:headers => {'User-Agent' => 'Mozilla/5.0', 'Accept-Encoding' => ''})
+          assert_equal "http://assethost.com", CloudfrontAssetHost.asset_host(@source, request)
+        end
+
+        should "support not support gzip for IE6-7" do
+          request = stub(:headers => {'User-Agent' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)', 'Accept-Encoding' => 'gzip, compress'})
+          assert_equal "http://assethost.com", CloudfrontAssetHost.asset_host(@source, request)
+
+          request = stub(:headers => {'User-Agent' => 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; bgft)', 'Accept-Encoding' => 'gzip, compress'})
           assert_equal "http://assethost.com", CloudfrontAssetHost.asset_host(@source, request)
         end
 
